@@ -86,6 +86,20 @@ h2 {
   padding: 1.25rem;
   background: var(--panel);
   text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.option:active {
+  background: var(--rule);
+}
+
+.tap-continue {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .key-label {

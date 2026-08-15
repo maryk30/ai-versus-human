@@ -22,6 +22,14 @@ function shuffle(array) {
   return a;
 }
 
+// Tapping an option (or an "any key" screen) dispatches a synthetic keydown
+// for the matching key, which jsPsych's keyboard listener treats the same
+// as a real keypress. This is what makes the study usable on phones/
+// tablets, which have no F/J keys to press.
+function tapKey(key) {
+  return `document.dispatchEvent(new KeyboardEvent('keydown', { key: '${key}' }))`;
+}
+
 function buildStimulusHTML(leftText, rightText, { timed }) {
   const timerBar = timed
     ? `<div class="timer-track"><div class="timer-fill" style="animation-duration:${FAST_TRIAL_DURATION_MS}ms;"></div></div>`
@@ -29,16 +37,16 @@ function buildStimulusHTML(leftText, rightText, { timed }) {
   return `
     ${timerBar}
     <div class="pair-wrap">
-      <div class="option">
+      <div class="option" onclick="${tapKey("f")}">
         <div class="key-label">F</div>
         <div class="option-text">${leftText}</div>
       </div>
-      <div class="option">
+      <div class="option" onclick="${tapKey("j")}">
         <div class="key-label">J</div>
         <div class="option-text">${rightText}</div>
       </div>
     </div>
-    <div class="prompt-line">Which do you think a person wrote?</div>
+    <div class="prompt-line">Which do you think a person wrote? (tap an option, or press F / J)</div>
   `;
 }
 
@@ -110,9 +118,10 @@ function buildTimeline() {
        to stop.</p>`,
       `<h2>Part 1</h2>
        <p>In the first part, you'll have <strong>a few seconds</strong> per
-       pair. Press <strong>F</strong> for the left option or
-       <strong>J</strong> for the right option. If you don't answer in
-       time, the trial just moves on — that's fine.</p>`,
+       pair. Tap the option you pick, or on a keyboard press
+       <strong>F</strong> for the left option or <strong>J</strong> for the
+       right option. If you don't answer in time, the trial just moves
+       on — that's fine.</p>`,
       `<h2>Practice</h2>
        <p>Let's try a practice round first. This doesn't count.</p>`,
     ],
@@ -126,8 +135,12 @@ function buildTimeline() {
 
   timeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus:
-      '<p>Good — that\'s the idea. Press any key when you\'re ready to start the real first part.</p>',
+    stimulus: `
+      <div class="tap-continue" onclick="${tapKey(" ")}">
+        <p>Good — that's the idea. Press any key, or tap here, when you're
+        ready to start the real first part.</p>
+      </div>
+    `,
     choices: "ALL_KEYS",
   });
 
@@ -137,15 +150,22 @@ function buildTimeline() {
   });
 
   // ---- Debrief ----
+  // Data is submitted as soon as this screen loads (on_start), not gated on
+  // the participant pressing/tapping a key — so it's saved even if they
+  // close the tab right away instead of dismissing this screen.
   timeline.push({
     type: jsPsychHtmlKeyboardResponse,
+    on_start: submitData,
     stimulus: `
-      <h2>Thank you</h2>
-      <p>In each pair, one sentence was written by a person and one by an
-      AI system, on the same topic. This study is looking at how well
-      people can sense which is which under time pressure, going with
-      their first instinct.</p>
-      <p>Press any key to finish. Your responses will be saved automatically.</p>
+      <div class="tap-continue" onclick="${tapKey(" ")}">
+        <h2>Thank you</h2>
+        <p>In each pair, one sentence was written by a person and one by an
+        AI system, on the same topic. This study is looking at how well
+        people can sense which is which under time pressure, going with
+        their first instinct.</p>
+        <p>Your responses have been saved. Press any key, or tap here, to
+        finish.</p>
+      </div>
     `,
     choices: "ALL_KEYS",
   });
@@ -155,20 +175,20 @@ function buildTimeline() {
 
 /* ------------------------------------------------------------- run it -- */
 
+function submitData() {
+  if (!DATA_ENDPOINT_URL) return;
+  const allData = jsPsych.data.get().values();
+  fetch(DATA_ENDPOINT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" }, // avoids CORS preflight for Apps Script
+    body: JSON.stringify(allData),
+  }).catch(function (err) {
+    console.warn("Could not send data to endpoint.", err);
+  });
+}
+
 const jsPsych = initJsPsych({
   on_finish: function () {
-    const allData = jsPsych.data.get().values();
-
-    if (DATA_ENDPOINT_URL) {
-      fetch(DATA_ENDPOINT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" }, // avoids CORS preflight for Apps Script
-        body: JSON.stringify(allData),
-      }).catch(function (err) {
-        console.warn("Could not send data to endpoint.", err);
-      });
-    }
-
     document.body.insertAdjacentHTML(
       "beforeend",
       `<div style="text-align:center;padding:2rem;font-family:sans-serif;">
