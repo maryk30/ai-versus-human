@@ -134,22 +134,6 @@ function buildTimeline() {
     timeline.push(...buildTrial(pair, { block: "fast", timed: true }));
   });
 
-  timeline.push({
-    type: jsPsychInstructions,
-    pages: [
-      `<h2>Part 2</h2>
-       <p>Now you'll see the same kind of pairs again, but this time
-       <strong>take as long as you like</strong>. Read carefully and choose
-       which one you think a person wrote.</p>`,
-    ],
-    show_clickable_nav: true,
-  });
-
-  // ---- Block B: slow, deliberate, untimed ----
-  shuffle(STIMULUS_PAIRS).forEach((pair) => {
-    timeline.push(...buildTrial(pair, { block: "slow", timed: false }));
-  });
-
   // ---- Debrief ----
   timeline.push({
     type: jsPsychHtmlKeyboardResponse,
