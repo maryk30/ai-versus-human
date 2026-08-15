@@ -7,25 +7,6 @@
  *   - ai:    written by an LLM (e.g. ChatGPT), in a FRESH chat, given only
  *            the bare topic — never shown your sentence, never asked to
  *            summarize a specific source paragraph.
- *
- * Protocol (follow this for every pair):
- *   1. Pick a plain factual topic you already know, nothing open to consult.
- *   2. Write your sentence cold, ~15-20 words, on the spot.
- *   3. Only after that's saved, open a fresh LLM chat and prompt with just
- *      the topic: "Write one sentence, ~15-20 words, explaining what
- *      [topic] is." Don't show it your sentence.
- *   4. Trim both to within ~2-3 words of each other in length. Don't touch
- *      wording/structure beyond that — the natural stylistic difference
- *      between the two is what's being tested, not something to remove.
- *   5. Reject the pair if you realize you were half-recalling a specific
- *      source while writing your side — pick a different topic instead.
- *
- * After drafting the full set, read them all together and check whether
- * one side has a systematic structural tell (e.g. AI side always lists
- * things, human side never does) showing up in more than about half your
- * pairs — if so, note it honestly as a possible confound in your write-up.
- *
- * id: unique short string, kept stable across the exported data.
  */
 
 const STIMULUS_PAIRS = [
