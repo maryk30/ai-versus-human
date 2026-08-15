@@ -1,10 +1,10 @@
 /**
  * UNCANNY VALLEY OF AUTHORSHIP — pilot experiment
  * ==================================================
- * Fast, forced binary choice (time-pressured) vs. slow, deliberate choice
- * on the SAME human-written / AI-written text pairs, on the same topic.
- * The comparison between blocks is the whole point — see README.md for
- * the design rationale and analysis plan.
+ * Fast, forced binary choice (time-pressured): for each pair of
+ * human-written / AI-written text on the same topic, pick which one you
+ * think a person wrote. See README.md for the design rationale and
+ * analysis plan.
  */
 
 const DATA_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzd66KI5NAHa_TBXTMTyNB74xdhZe-oYeWn9eTmRFIPqH9SuIiLEdvnUSb4X1t2Ezdx/exec"; // e.g. "https://script.google.com/macros/s/AKfycb.../exec"
@@ -140,9 +140,9 @@ function buildTimeline() {
     stimulus: `
       <h2>Thank you</h2>
       <p>In each pair, one sentence was written by a person and one by an
-      AI system, on the same topic. This study is looking at whether
-      people can sense which is which faster under time pressure than they
-      can consciously explain, or the reverse.</p>
+      AI system, on the same topic. This study is looking at how well
+      people can sense which is which under time pressure, going with
+      their first instinct.</p>
       <p>Press any key to finish. Your responses will be saved automatically.</p>
     `,
     choices: "ALL_KEYS",
