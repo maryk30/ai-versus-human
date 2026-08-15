@@ -67,8 +67,9 @@ understand the task.
 Each submission appends one row per response trial (fixation/instruction
 screens are filtered out) with a shared `participant_id` (a UUID generated
 per submission), plus `block`, `pair_id`, `human_on_left`, `response`, `rt`,
-`chose_human`, and `timed_out`. A header row is added automatically on the
-first write if the sheet is empty.
+`selected` (`"human"` or `"ai"`, whichever the participant picked, or blank
+on a timeout), `chose_human`, and `timed_out`. A header row is added
+automatically on the first write if the sheet is empty.
 
 ### Debugging "nothing shows up in the Sheet"
 

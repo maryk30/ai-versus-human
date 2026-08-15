@@ -23,6 +23,7 @@ function doPost(e) {
       "human_on_left",
       "response",
       "rt_ms",
+      "selected",
       "chose_human",
       "timed_out",
     ]);
@@ -39,6 +40,7 @@ function doPost(e) {
       t.human_on_left,
       t.response,
       t.rt,
+      t.selected,
       t.chose_human,
       t.timed_out,
     ]);

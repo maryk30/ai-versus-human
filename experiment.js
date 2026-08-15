@@ -73,10 +73,12 @@ function buildTrial(pair, { block, timed }) {
     on_finish: function (data) {
       if (data.response === null) {
         data.chose_human = null;
+        data.selected = null;
         data.timed_out = true;
       } else {
         const chose_left = data.response === "f";
         data.chose_human = chose_left === humanOnLeft;
+        data.selected = data.chose_human ? "human" : "ai";
         data.timed_out = false;
       }
     },
