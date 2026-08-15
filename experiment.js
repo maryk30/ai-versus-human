@@ -157,16 +157,13 @@ const jsPsych = initJsPsych({
   on_finish: function () {
     const allData = jsPsych.data.get().values();
 
-    // Always offer a local CSV download as a safety net.
-    jsPsych.data.get().localSave("csv", `uncanny_valley_authorship_${Date.now()}.csv`);
-
     if (DATA_ENDPOINT_URL) {
       fetch(DATA_ENDPOINT_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain" }, // avoids CORS preflight for Apps Script
         body: JSON.stringify(allData),
       }).catch(function (err) {
-        console.warn("Could not send data to endpoint; CSV download still available.", err);
+        console.warn("Could not send data to endpoint.", err);
       });
     }
 
