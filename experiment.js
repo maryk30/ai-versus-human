@@ -19,22 +19,32 @@ function shuffle(array) {
   return a;
 }
 
-// Tapping an option (or an "any key" screen) dispatches a synthetic keydown
-// for the matching key, which jsPsych's keyboard listener treats the same
-// as a real keypress. This is what makes the study usable on phones/
-// tablets, which have no F/J keys to press.
-function tapKey(key) {
-  return `document.dispatchEvent(new KeyboardEvent('keydown', { key: '${key}' }))`;
+// Options are tappable in addition to keyboard-responsive: a real click
+// listener attached in on_load ends the trial directly via
+// jsPsych.finishTrial, with the same { response, rt } shape a keypress
+// would produce. (A dispatched synthetic KeyboardEvent doesn't reliably
+// reach jsPsych's keyboard listener on real mobile browsers, so we don't
+// rely on that.)
+function attachTapHandler(selector, getResponse) {
+  const startTime = performance.now();
+  document.querySelectorAll(selector).forEach(function (el) {
+    el.addEventListener("click", function () {
+      jsPsych.finishTrial({
+        response: getResponse(el),
+        rt: Math.round(performance.now() - startTime),
+      });
+    });
+  });
 }
 
 function buildStimulusHTML(leftText, rightText) {
   return `
     <div class="pair-wrap">
-      <div class="option" onclick="${tapKey("f")}">
+      <div class="option" data-key="f">
         <div class="key-label">F</div>
         <div class="option-text">${leftText}</div>
       </div>
-      <div class="option" onclick="${tapKey("j")}">
+      <div class="option" data-key="j">
         <div class="key-label">J</div>
         <div class="option-text">${rightText}</div>
       </div>
@@ -69,6 +79,11 @@ function buildTrial(pair, { block }) {
       block: block,
       pair_id: pair.id,
       human_on_left: humanOnLeft,
+    },
+    on_load: function () {
+      attachTapHandler(".option", function (el) {
+        return el.dataset.key;
+      });
     },
     on_finish: function (data) {
       const chose_left = data.response === "f";
@@ -119,12 +134,17 @@ function buildTimeline() {
   timeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
-      <div class="tap-continue" onclick="${tapKey(" ")}">
+      <div class="tap-continue">
         <p>Good — that's the idea. Press any key, or tap here, when you're
         ready to start the real part.</p>
       </div>
     `,
     choices: "ALL_KEYS",
+    on_load: function () {
+      attachTapHandler(".tap-continue", function () {
+        return "tap";
+      });
+    },
   });
 
   // ---- Main block ----
@@ -140,7 +160,7 @@ function buildTimeline() {
     type: jsPsychHtmlKeyboardResponse,
     on_start: submitData,
     stimulus: `
-      <div class="tap-continue" onclick="${tapKey(" ")}">
+      <div class="tap-continue">
         <h2>Thank you</h2>
         <p>In each pair, one sentence was written by a person and one by an
         AI system, on the same topic. This study is looking at how well
@@ -150,6 +170,11 @@ function buildTimeline() {
       </div>
     `,
     choices: "ALL_KEYS",
+    on_load: function () {
+      attachTapHandler(".tap-continue", function () {
+        return "tap";
+      });
+    },
   });
 
   return timeline;

@@ -1,6 +1,5 @@
 /**
- * Paste this into script.google.com (a new project), bound to a Google Sheet.
- * See README.md Step 3 for the full deploy walkthrough.
+ * Paste this into script.google.com (a new project), bound to a Google Sheet
  *
  * This function receives the JSON array jsPsych sends and appends one row
  * per trial to the active sheet, creating a header row on first run.
