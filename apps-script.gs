@@ -17,6 +17,7 @@ function doPost(e) {
     sheet.appendRow([
       "timestamp",
       "participant_id",
+      "participant_name",
       "block",
       "pair_id",
       "human_on_left",
@@ -33,6 +34,7 @@ function doPost(e) {
     sheet.appendRow([
       new Date().toISOString(),
       participantId,
+      t.participant_name,
       t.block,
       t.pair_id,
       t.human_on_left,

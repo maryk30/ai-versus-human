@@ -105,6 +105,18 @@ function buildTimeline() {
     auto_preload: true,
   });
 
+  // ---- Name entry ----
+  // Stored via jsPsych.data.addProperties, which attaches participant_name
+  // to every trial's data collected from this point on (no need to thread
+  // it through buildTrial).
+  timeline.push({
+    type: jsPsychSurveyText,
+    questions: [{ prompt: "What's your name?", name: "name", required: true }],
+    on_finish: function (data) {
+      jsPsych.data.addProperties({ participant_name: data.response.name });
+    },
+  });
+
   timeline.push({
     type: jsPsychInstructions,
     pages: [
