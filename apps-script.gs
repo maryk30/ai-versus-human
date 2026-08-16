@@ -25,7 +25,6 @@ function doPost(e) {
       "rt_ms",
       "selected",
       "chose_human",
-      "timed_out",
     ]);
   }
 
@@ -42,7 +41,6 @@ function doPost(e) {
       t.rt,
       t.selected,
       t.chose_human,
-      t.timed_out,
     ]);
   });
 

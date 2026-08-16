@@ -2,7 +2,7 @@
 
 A small jsPsych study: on each trial, participants see two short sentences about
 the same topic — one written by a human, one written by an AI — and pick which
-one they think a person wrote, under a hard time limit.
+one they think a person wrote. There's no time limit.
 
 ## How it runs
 
@@ -11,13 +11,14 @@ one they think a person wrote, under a hard time limit.
 - `experiment.js` builds the timeline: welcome/instructions → one practice
   trial → the real trials (each pair shuffled, side randomized) → debrief.
 - Each trial: a 500ms fixation cross, then the pair shown side by side
-  (`F` = left, `J` = right) with a shrinking timer bar, for
-  `FAST_TRIAL_DURATION_MS` (currently 8000ms). No response within that window
-  is logged as a timeout, not an error.
-- `on_finish` (in the top-level `initJsPsych` call) posts all collected trial
-  data to `DATA_ENDPOINT_URL` and shows a "Data saved" message. There's no
-  local CSV fallback — if the endpoint is unreachable, the data isn't saved
-  anywhere else, so keep the deployment healthy before collecting real data.
+  (`F` = left, `J` = right, tappable on mobile too). No time limit — the
+  trial waits for a response.
+- The debrief screen posts all collected trial data to `DATA_ENDPOINT_URL`
+  as soon as it loads (`on_start`, not gated on the participant
+  pressing/tapping through it), so data is saved even if they close the tab
+  immediately. There's no local CSV fallback — if the endpoint is
+  unreachable, the data isn't saved anywhere else, so keep the deployment
+  healthy before collecting real data.
 
 To try it locally, just open `index.html` in a browser — no build step, no
 server required.
@@ -67,9 +68,9 @@ understand the task.
 Each submission appends one row per response trial (fixation/instruction
 screens are filtered out) with a shared `participant_id` (a UUID generated
 per submission), plus `block`, `pair_id`, `human_on_left`, `response`, `rt`,
-`selected` (`"human"` or `"ai"`, whichever the participant picked, or blank
-on a timeout), `chose_human`, and `timed_out`. A header row is added
-automatically on the first write if the sheet is empty.
+`selected` (`"human"` or `"ai"`, whichever the participant picked), and
+`chose_human`. A header row is added automatically on the first write if the
+sheet is empty.
 
 ### Debugging "nothing shows up in the Sheet"
 
